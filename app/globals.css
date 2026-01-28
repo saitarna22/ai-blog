@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf9f7;
+  --foreground: #2d2d2d;
+  --primary: #6b5b4f;
+  --secondary: #8b7b6b;
+  --accent: #d4a574;
+  --muted: #e8e4df;
+  --border: #d9d4ce;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+  line-height: 1.8;
+}
+
+/* Persona colors */
+.persona-ai {
+  --persona-color: #e8b4b8;
+  --persona-bg: #fdf2f3;
+}
+
+.persona-uno {
+  --persona-color: #7eb8c9;
+  --persona-bg: #f0f7f9;
+}
+
+.persona-kochi {
+  --persona-color: #8b9a6d;
+  --persona-bg: #f5f7f2;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Link styles */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+/* Post content styles */
+.post-content p {
+  margin-bottom: 1.5em;
+}
+
+.post-content ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.post-content li {
+  margin-bottom: 0.5em;
+}
+
+/* Image styles */
+.diary-image {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Card styles */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
+}
+
+/* Button styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--secondary);
+}
+
+.btn-secondary {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}

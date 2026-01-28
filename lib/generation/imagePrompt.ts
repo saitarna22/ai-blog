@@ -1,0 +1,125 @@
+import OpenAI from "openai";
+import { PersonaId, ImageStyleKey, IMAGE_STYLE_PRESETS } from "@/types";
+import { getAdminStorage } from "@/lib/firebase/admin";
+
+let openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!openai) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+}
+
+// Base prompt for all images (Ai-chan's art style)
+const BASE_PROMPT = `A hand-drawn illustration created as if drawn by a 28-year-old woman in her personal diary.
+The drawing feels intimate, gentle, and slightly imperfect, like a sketch made to remember a moment rather than to show others.
+Soft lines, natural composition, warm and calm atmosphere.
+No photographic realism, no commercial illustration style.
+The image should feel like a memory, not a photo.`;
+
+// Negative prompt (things to avoid)
+const NEGATIVE_PROMPT = `photorealistic, ultra-detailed, 3D render, anime style, commercial illustration,
+logo, watermark, text, typography, poster design,
+high contrast lighting, dramatic shadows, advertising style`;
+
+// Persona-specific hints
+const PERSONA_HINTS: Record<PersonaId, string> = {
+  ai: "Focus on a personal everyday moment and emotional warmth.",
+  uno: "Prefer still life or quiet spaces rather than a person.",
+  kochi: "Prefer symbolic objects, avoid modern references, keep it timeless.",
+};
+
+export async function generateImage(params: {
+  description: string;
+  personaId: PersonaId;
+  styleKey: ImageStyleKey;
+  postId: string;
+}): Promise<{ url: string; prompt: string }> {
+  const { description, personaId, styleKey, postId } = params;
+  const model = process.env.OPENAI_IMAGE_MODEL || "dall-e-3";
+
+  const stylePrompt = IMAGE_STYLE_PRESETS[styleKey];
+  const personaHint = PERSONA_HINTS[personaId];
+
+  const fullPrompt = `${BASE_PROMPT}
+
+Style: ${stylePrompt}
+
+Subject: ${description}
+
+${personaHint}
+
+Avoid: ${NEGATIVE_PROMPT}`;
+
+  const response = await getOpenAI().images.generate({
+    model,
+    prompt: fullPrompt,
+    n: 1,
+    size: "1792x1024",
+    quality: "standard",
+    style: "natural",
+  });
+
+  const imageUrl = response.data?.[0]?.url;
+  if (!imageUrl) {
+    throw new Error("No image URL returned from OpenAI");
+  }
+
+  // Download and upload to Firebase Storage
+  const storedUrl = await uploadImageToStorage(imageUrl, postId);
+
+  return {
+    url: storedUrl,
+    prompt: fullPrompt,
+  };
+}
+
+async function uploadImageToStorage(imageUrl: string, postId: string): Promise<string> {
+  // Download image from OpenAI
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(`Failed to download image: ${response.statusText}`);
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  // Upload to Firebase Storage
+  const storage = getAdminStorage();
+  const bucket = storage.bucket();
+  const fileName = `posts/${postId}/image.png`;
+  const file = bucket.file(fileName);
+
+  await file.save(buffer, {
+    metadata: {
+      contentType: "image/png",
+    },
+  });
+
+  // Make file public
+  await file.makePublic();
+
+  // Get public URL
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+  return publicUrl;
+}
+
+export function pickRandomStyle(): ImageStyleKey {
+  const styles: ImageStyleKey[] = ["pencil_sketch", "watercolor", "urban_sketch", "diary_doodle"];
+  const weights = [0.3, 0.3, 0.2, 0.2]; // Slightly favor pencil and watercolor
+
+  const random = Math.random();
+  let cumulative = 0;
+
+  for (let i = 0; i < styles.length; i++) {
+    cumulative += weights[i];
+    if (random < cumulative) {
+      return styles[i];
+    }
+  }
+
+  return styles[0];
+}
