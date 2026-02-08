@@ -293,3 +293,130 @@ console.log(await res.json());
 - `maxDuration = 300`（5分）を設定済み
 - Vercel Hobby プランでは最大 60 秒。**画像生成を含むため Pro プラン推奨**
 - Hobby プランの場合、画像生成が間に合わない可能性がある
+
+---
+
+## 付録: カスタムドメインの設定
+
+### A-1: ドメインの取得
+
+好みのレジストラでドメインを購入する。主な選択肢:
+
+| レジストラ | 特徴 | `.com` 年額目安 |
+|-----------|------|----------------|
+| **Cloudflare Registrar** | 原価販売で最安。DNS管理もセット | 約 $10 |
+| **Google Domains → Squarespace** | Google Domains から移管済み。UIがシンプル | 約 $12 |
+| **お名前.com** | 日本語対応。初年度安いが更新料に注意 | 約 ¥1,500（初年度） |
+| **Namecheap** | 海外では定番。Whois Privacy 無料 | 約 $9 |
+
+> 迷ったら **Cloudflare Registrar** を推奨。
+> 原価で更新でき、DNS設定もCloudflareダッシュボード内で完結する。
+
+#### Cloudflare でのドメイン購入手順
+
+1. https://dash.cloudflare.com にアクセス（アカウントがなければ Sign Up）
+2. 左メニュー「Domain Registration」→「Register Domains」
+3. 欲しいドメイン名を検索（例: `sosaku-nikki.com`）
+4. 空いていれば「Purchase」をクリック
+5. 登録者情報を入力（住所・名前など。Whois Privacy は自動で有効）
+6. 支払い情報を入力 → 「Complete purchase」
+7. 購入完了後、Cloudflare の DNS 管理画面にドメインが表示される
+
+### A-2: Vercel にカスタムドメインを追加
+
+1. Vercel ダッシュボード → 対象プロジェクト → 「Settings」タブ
+2. 左メニュー「Domains」をクリック
+3. 入力欄に取得したドメインを入力（例: `sosaku-nikki.com`）→「Add」
+4. Vercel が推奨する設定が表示される:
+
+   ```
+   推奨構成:
+     sosaku-nikki.com       → Aレコードまたはリダイレクト
+     www.sosaku-nikki.com   → CNAMEレコード
+   ```
+
+5. 通常は以下の2パターンのどちらかが表示される:
+   - **apex ドメイン（`sosaku-nikki.com`）を使う場合** → A レコード設定
+   - **www 付き（`www.sosaku-nikki.com`）を使う場合** → CNAME 設定
+
+> **apex ドメイン（www なし）を推奨**。Vercel が自動で `www` → apex のリダイレクトも設定してくれる。
+
+### A-3: DNS レコードの設定
+
+Vercel が指示する DNS レコードをレジストラ側で設定する。
+
+#### Cloudflare の場合
+
+1. Cloudflare ダッシュボード → 対象ドメイン → 「DNS」→「Records」
+2. 以下のレコードを追加:
+
+**apex ドメイン（`sosaku-nikki.com`）:**
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| A | `@` | `76.76.21.21` | **DNS only**（プロキシOFF） |
+
+**www サブドメイン:**
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| CNAME | `www` | `cname.vercel-dns.com` | **DNS only**（プロキシOFF） |
+
+> **重要**: Cloudflare のプロキシ（オレンジ雲）は **必ず OFF（DNS only / グレー雲）** にする。
+> Vercel は自前で SSL を発行するため、Cloudflare のプロキシが有効だと SSL 競合が起きる。
+
+#### お名前.com / 他のレジストラの場合
+
+レジストラの DNS 管理画面で同様のレコードを設定する。画面 UI は異なるが設定内容は同じ:
+- A レコード: `@` → `76.76.21.21`
+- CNAME レコード: `www` → `cname.vercel-dns.com`
+
+### A-4: SSL 証明書の自動発行を確認
+
+1. DNS 設定後、Vercel ダッシュボード → Settings → Domains に戻る
+2. ドメインの横のステータスが以下のように変わるのを待つ:
+   - **「Invalid Configuration」** → DNS 反映待ち（最大48時間、通常は数分〜数時間）
+   - **「Valid Configuration」** → DNS 反映完了
+3. DNS が反映されると Vercel が自動で **Let's Encrypt の SSL 証明書** を発行する
+4. 最終的にステータスが **チェックマーク（緑）** になれば完了
+
+> DNS 反映には時間がかかる場合がある。設定直後に「Invalid」でも焦らず待つ。
+
+### A-5: アプリ側の設定更新
+
+ドメインが有効になったら、以下の3箇所を更新する。
+
+#### 1. Vercel 環境変数
+
+| 変数名 | 新しい値 |
+|--------|---------|
+| `NEXT_PUBLIC_BASE_URL` | `https://sosaku-nikki.com`（取得したドメインに置き換え） |
+
+設定変更後、Vercel ダッシュボードから **Redeploy** する（Settings → Deployments → 最新の「...」→ Redeploy）。
+
+#### 2. Firebase Auth の承認済みドメイン
+
+1. Firebase Console → Authentication → Settings → Authorized domains
+2. 「ドメインを追加」で カスタムドメインを追加（例: `sosaku-nikki.com`）
+
+> これを忘れると、カスタムドメインからの Google ログインが `auth/unauthorized-domain` エラーになる。
+
+#### 3. Firebase Auth のリダイレクト URI（必要に応じて）
+
+1. Google Cloud Console（https://console.cloud.google.com）にアクセス
+2. 対象プロジェクトを選択
+3. 左メニュー「API とサービス」→「認証情報」
+4. OAuth 2.0 クライアント ID → Web client をクリック
+5. 「承認済みのリダイレクト URI」に以下を追加:
+   - `https://sosaku-nikki.com/__/auth/handler`
+
+> Firebase Auth がリダイレクト方式の場合に必要。ポップアップ方式のみなら不要な場合もあるが、念のため追加しておくと安全。
+
+### A-6: 確認チェックリスト
+
+- [ ] `https://sosaku-nikki.com` にアクセスしてサイトが表示される
+- [ ] `https://www.sosaku-nikki.com` が apex ドメインにリダイレクトされる
+- [ ] ブラウザのアドレスバーに鍵マーク（SSL有効）が表示される
+- [ ] `/admin/login` で Google ログインが成功する
+- [ ] `/sitemap.xml` 内の URL がカスタムドメインになっている
+- [ ] OGP 確認ツール（https://ogp.me/ 等）で `og:url` がカスタムドメインになっている
