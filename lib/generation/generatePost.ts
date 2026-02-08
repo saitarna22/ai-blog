@@ -1,11 +1,12 @@
-import { Post, Persona, PersonaId } from "@/types";
-import { getPersona, hasAnyPosts } from "@/lib/db/personas";
+import { Post, Persona, PersonaId, StorylineState } from "@/types";
+import { getPersona, hasAnyPosts, updatePersona } from "@/lib/db/personas";
 import { createPost, updatePost, getPost, getLatestPostByPersona } from "@/lib/db/posts";
 import { createJob, startJob, completeJob, failJob } from "@/lib/db/jobs";
 import { generateText } from "./textPrompt";
 import { generateImage, pickRandomStyle } from "./imagePrompt";
 import { pickFormat } from "./pickFormat";
 import { generatePostId } from "@/lib/utils/validators";
+import { buildStorylineUpdatePrompt } from "./promptTemplates";
 
 const MAX_IMAGE_RETRIES = 2;
 
@@ -134,6 +135,11 @@ export async function generatePostForPersona(
       await createPost(post);
     }
 
+    // Update storyline asynchronously (non-blocking)
+    updateStoryline(persona, generatedContent.title, generatedContent.sections).catch(
+      (err) => console.error("Storyline update failed (non-critical):", err)
+    );
+
     await completeJob(jobId, { success: true, postId });
     return { success: true, postId };
   } catch (error) {
@@ -229,4 +235,67 @@ function summarizePost(post: Post): string {
   const excerpt = firstSection?.text?.slice(0, 200) || "";
 
   return `前回「${title}」では、${excerpt}...という内容でした。`;
+}
+
+/**
+ * 生成された投稿内容からストーリーラインを更新する
+ */
+async function updateStoryline(
+  persona: Persona,
+  generatedTitle: string,
+  sections: { type: string; text?: string; bullets?: string[] }[]
+): Promise<void> {
+  // OpenAI を動的にインポート（循環参照回避）
+  const OpenAI = (await import("openai")).default;
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  const contentText = sections
+    .map((s) => {
+      if (s.type === "text" && s.text) return s.text;
+      if (s.type === "bullets" && s.bullets) return s.bullets.join("\n");
+      return "";
+    })
+    .filter(Boolean)
+    .join("\n\n");
+
+  const prompt = buildStorylineUpdatePrompt({
+    persona,
+    generatedTitle,
+    generatedContent: contentText,
+  });
+
+  const response = await openai.chat.completions.create({
+    model: process.env.OPENAI_TEXT_MODEL || "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: "あなたは創作日記のストーリーライン管理者です。日記の内容からストーリーの進行状況を抽出・更新します。出力はJSONのみ。",
+      },
+      { role: "user", content: prompt },
+    ],
+    temperature: 0.3,
+    max_tokens: 1000,
+    response_format: { type: "json_object" },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) return;
+
+  let cleaned = content.trim();
+  if (cleaned.startsWith("```json")) cleaned = cleaned.slice(7);
+  if (cleaned.startsWith("```")) cleaned = cleaned.slice(3);
+  if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3);
+  cleaned = cleaned.trim();
+
+  const parsed = JSON.parse(cleaned);
+
+  const storylineUpdate: StorylineState = {
+    currentSituation: parsed.currentSituation || "",
+    ongoingThreads: (parsed.ongoingThreads || []).slice(0, 5),
+    recentEvents: (parsed.recentEvents || []).slice(0, 5),
+    recentMood: parsed.recentMood || "",
+    updatedAt: new Date(),
+  };
+
+  await updatePersona(persona.personaId, { storyline: storylineUpdate });
 }

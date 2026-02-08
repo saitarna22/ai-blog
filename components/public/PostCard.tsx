@@ -1,18 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Post, PersonaId } from "@/types";
+import { Post } from "@/types";
 import { formatDateDisplay } from "@/lib/utils/date";
+import { personaNames } from "@/lib/constants/personas";
 
 interface PostCardProps {
   post: Post;
   showPersona?: boolean;
 }
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地 仁 殿",
-};
 
 export default function PostCard({ post, showPersona = true }: PostCardProps) {
   const excerpt = getExcerpt(post);

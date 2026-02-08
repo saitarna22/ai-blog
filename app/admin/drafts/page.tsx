@@ -2,12 +2,7 @@ import Link from "next/link";
 import { getDrafts } from "@/lib/db/posts";
 import { formatDateDisplay } from "@/lib/utils/date";
 import { PersonaId } from "@/types";
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地",
-};
+import { personaNames } from "@/lib/constants/personas";
 
 export const dynamic = "force-dynamic";
 

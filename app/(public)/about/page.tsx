@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { PERSONA_DISPLAY } from "@/lib/constants/personas";
+import { PersonaId } from "@/types";
 
 export const metadata: Metadata = {
   title: "このサイトについて | 創作日記",
@@ -28,32 +30,24 @@ export default function AboutPage() {
         <section>
           <h2 className="text-xl font-semibold mb-3">日記を書いている人たち</h2>
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-[#fdf2f3]">
-              <h3 className="font-semibold mb-1">愛（あい）</h3>
-              <p className="text-sm text-secondary">
-                奇数日に日記を書く。日常の小さな幸せを大切にしながら、自分らしく生きている28歳の女性。
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-[#f0f7f9]">
-              <h3 className="font-semibold mb-1">宇野（うの）</h3>
-              <p className="text-sm text-secondary">
-                月・水・金・日に日記を書く。静かな時間と空間を愛する人。日曜日は必ず甘味を楽しむ。
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-[#f5f7f2]">
-              <h3 className="font-semibold mb-1">幸地 仁 殿（こうち じん どの）</h3>
-              <p className="text-sm text-secondary">
-                偶数日に日記を書く。時代を超えた視点で日々を見つめる。象徴的なものを好む。
-              </p>
-            </div>
+            {(["ai", "uno", "kochi"] as PersonaId[]).map((id) => {
+              const p = PERSONA_DISPLAY[id];
+              return (
+                <div key={id} className={`p-4 rounded-lg ${p.bgClass}`}>
+                  <h3 className="font-semibold mb-0.5">{p.blogTitle}</h3>
+                  <p className="text-xs text-secondary mb-1">{p.name}</p>
+                  <p className="text-sm text-secondary">{p.description}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold mb-3">画像について</h2>
           <p className="text-secondary leading-relaxed">
-            このサイトに掲載されている画像は全て、愛ちゃんが自分の日記のために描いた絵という設定です。
-            写真ではなく、上手すぎない、温かみのある手描き風のイラストで統一しています。
+            このサイトに掲載されている画像は全てAIが生成した手描き風のイラストです。
+            写真ではなく、温かみのある日記の挿絵として制作しています。
           </p>
         </section>
 

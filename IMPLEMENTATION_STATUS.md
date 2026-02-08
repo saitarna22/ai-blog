@@ -1,7 +1,7 @@
 # 実装進捗状況
 
-## 完了日時
-2026年1月28日
+## 最終更新
+2026年2月8日
 
 ## 実装完了項目
 
@@ -72,26 +72,52 @@
 - [x] `app/admin/jobs/page.tsx` - ジョブログ
 
 ### 11. 設定ファイル
-- [x] `types/index.ts` - 型定義
-- [x] `.env.example` - 環境変数サンプル
+- [x] `types/index.ts` - 型定義（StoryThread, StorylineState追加済み）
+- [ ] `.env.example` - 環境変数サンプル（ファイル未作成）
 - [x] `next.config.ts` - Next.js設定
 - [x] `app/globals.css` - グローバルスタイル
 
+### 12. ペルソナ再設計（2026/2/8追加）
+- [x] `lib/constants/personas.ts` - ペルソナ表示情報の一元管理（PERSONA_DISPLAY）
+- [x] `types/index.ts` - StoryThread / StorylineState型、PersonaにblogTitle / storyline追加
+- [x] `lib/db/personas.ts` - docToPersonaにblogTitle / storyline対応
+- [x] `lib/scheduler/schedule.ts` - getSeasonalContext()（季節・行事カレンダー）、isWeekend()
+- [x] `lib/generation/pickFormat.ts` - 各ペルソナ4フォーマット、週末ルール追加
+- [x] `lib/generation/imagePrompt.ts` - ペルソナ別ヒントをより具体的に更新
+- [x] `lib/generation/promptTemplates.ts` - ブログタイトル / ストーリーライン / 季節情報をプロンプトに追加
+- [x] `lib/generation/generatePost.ts` - ストーリーライン自動更新処理（非同期）
+- [x] 全公開ページ・コンポーネント・管理画面のpersonaNames一元化
+
 ## ビルドステータス
 - [x] TypeScriptコンパイル成功
-- [x] 本番ビルド成功
+- [x] 本番ビルド成功（2026/2/8再確認済み）
 
-## 投稿スケジュール仕様
-| 人格 | 投稿日 |
-|------|--------|
-| 愛（ai） | 奇数日（1日、3日、5日...） |
-| 幸地（kochi） | 偶数日（2日、4日、6日...） |
-| 宇野（uno） | 月・水・金・日曜日 |
+## ペルソナ仕様
 
-※ 宇野の日曜日は「甘味回」フォーマット固定
+| ID | 名前 | ブログタイトル | 投稿日 |
+|----|------|---------------|--------|
+| ai | 高橋 愛（28歳） | 愛のひとりごと | 奇数日 |
+| uno | 宇野 康二（63歳） | 宇野康二の散歩日和 | 月水金日 |
+| kochi | 幸地 仁（35歳） | 珍道中BLOG | 偶数日 |
+
+### フォーマット一覧
+| ペルソナ | フォーマット | weight | 備考 |
+|---------|------------|--------|------|
+| ai | ai_daily（日常日記） | 3 | |
+| ai | ai_bento（お弁当日記） | 2 | |
+| ai | ai_mochi（もち観察日記） | 2 | |
+| ai | ai_weekend（週末おでかけ日記） | 1 | 土日のみ選択可能 |
+| uno | uno_daily（日常日記） | 3 | |
+| uno | uno_sweets_sunday（甘味巡り） | 0 | 日曜固定 |
+| uno | uno_walk（散歩記録） | 2 | |
+| uno | uno_teacher（元教師の独り言） | 1 | |
+| kochi | kochi_daily（日常日記） | 2 | |
+| kochi | kochi_travel（旅レポ） | 3 | |
+| kochi | kochi_incident（珍道中エピソード） | 2 | |
+| kochi | kochi_gourmet（B級グルメ探訪） | 2 | |
 
 ## 画像生成仕様
-- 全画像は「愛ちゃんが描いた絵」というコンセプト
+- 手描き風イラストのコンセプト
 - スタイルプリセット: pencil_sketch, watercolor, urban_sketch, diary_doodle
 - DALL-E 3使用
 
@@ -134,9 +160,25 @@ Firestoreの `admins` コレクションに以下の形式でドキュメント�
 npm run dev
 ```
 
-## 今後の拡張予定（未実装）
-- [ ] 定期実行（Cloud Scheduler連携）
-- [ ] 収益化機能
-- [ ] SNS共有機能
+## 未実装タスク
+
+### デプロイ前に必須
+- [ ] Vercelデプロイ設定（プロジェクト作成・環境変数・動作確認）
+- [ ] `.env.example` の作成
+
+### 優先度：高
+- [ ] Vercel Cronによる日次自動生成
+- [ ] Firestoreへのペルソナ初期データ投入（blogTitleフィールド含む）
+- [ ] SEO最適化（sitemap.ts / robots.ts / JSON-LD / OGPメタタグ）
+
+### 優先度：中
 - [ ] RSS/Atomフィード
-- [ ] SEO最適化（sitemap.xml等）
+- [ ] SNS共有ボタン
+- [ ] アナリティクス導入
+- [ ] エラーハンドリング強化
+
+### 優先度：低
+- [ ] テスト基盤（vitest等）
+- [ ] 収益化機能
+- [ ] コメント機能
+- [ ] いいね/お気に入り機能

@@ -27,9 +27,9 @@ high contrast lighting, dramatic shadows, advertising style`;
 
 // Persona-specific hints
 const PERSONA_HINTS: Record<PersonaId, string> = {
-  ai: "Focus on a personal everyday moment and emotional warmth.",
-  uno: "Prefer still life or quiet spaces rather than a person.",
-  kochi: "Prefer symbolic objects, avoid modern references, keep it timeless.",
+  ai: "A warm, personal everyday scene: home cooking, a cat napping, a cozy apartment in Shimokitazawa, cafe interior. Emphasize emotional warmth and intimacy.",
+  uno: "A serene Kyoto scene: temple gardens, traditional sweets on a plate, quiet neighborhood streets, seasonal nature. Emphasize tranquility and nostalgia.",
+  kochi: "A travel scene somewhere in Japan: local trains, guesthouses, street food stalls, unexpected encounters. Emphasize adventure and curiosity.",
 };
 
 export async function generateImage(params: {

@@ -4,13 +4,7 @@ import { getJobs } from "@/lib/db/jobs";
 import { getAllPersonas } from "@/lib/db/personas";
 import { formatDateDisplay, getTodayDateKey } from "@/lib/utils/date";
 import { getPostingPersonas } from "@/lib/scheduler/schedule";
-import { PersonaId } from "@/types";
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地",
-};
+import { personaNames } from "@/lib/constants/personas";
 
 export const dynamic = "force-dynamic";
 

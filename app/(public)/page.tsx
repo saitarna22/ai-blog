@@ -1,6 +1,8 @@
 import { getPublishedPosts } from "@/lib/db/posts";
 import PostCard from "@/components/public/PostCard";
 import Link from "next/link";
+import { PERSONA_DISPLAY } from "@/lib/constants/personas";
+import { PersonaId } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -39,27 +41,25 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="card p-6 text-center">
-        <h2 className="text-lg font-semibold mb-3">日記を書いている人たち</h2>
-        <div className="flex justify-center gap-8">
-          <Link href="/p/ai" className="text-center group">
-            <div className="w-16 h-16 rounded-full bg-[#fdf2f3] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <span className="text-2xl">愛</span>
-            </div>
-            <span className="text-sm">愛</span>
-          </Link>
-          <Link href="/p/uno" className="text-center group">
-            <div className="w-16 h-16 rounded-full bg-[#f0f7f9] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <span className="text-2xl">宇</span>
-            </div>
-            <span className="text-sm">宇野</span>
-          </Link>
-          <Link href="/p/kochi" className="text-center group">
-            <div className="w-16 h-16 rounded-full bg-[#f5f7f2] flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-              <span className="text-2xl">幸</span>
-            </div>
-            <span className="text-sm">幸地</span>
-          </Link>
+      <section className="mb-8">
+        <h2 className="text-lg font-semibold mb-4 text-center">日記を書いている人たち</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {(["ai", "uno", "kochi"] as PersonaId[]).map((id) => {
+            const p = PERSONA_DISPLAY[id];
+            return (
+              <Link
+                key={id}
+                href={`/p/${id}`}
+                className={`${p.bgClass} rounded-lg p-5 hover:shadow-md transition-shadow block`}
+              >
+                <h3 className="font-semibold text-lg mb-1">{p.blogTitle}</h3>
+                <p className="text-xs text-secondary mb-2">{p.name}</p>
+                <p className="text-sm text-secondary leading-relaxed">
+                  {p.description}
+                </p>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </div>

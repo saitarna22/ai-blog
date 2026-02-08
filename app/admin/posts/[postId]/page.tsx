@@ -3,15 +3,10 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Post, PersonaId, PostSection } from "@/types";
+import { Post, PostSection } from "@/types";
 import { formatDateDisplay } from "@/lib/utils/date";
 import { useAuth } from "@/lib/auth/AuthContext";
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地",
-};
+import { personaNames } from "@/lib/constants/personas";
 
 interface PageProps {
   params: Promise<{ postId: string }>;

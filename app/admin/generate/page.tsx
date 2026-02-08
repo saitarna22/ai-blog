@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { PersonaId } from "@/types";
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地",
-};
+import { personaNames, PERSONA_DISPLAY } from "@/lib/constants/personas";
 
 export default function AdminGeneratePage() {
   const { getToken } = useAuth();
@@ -195,19 +190,22 @@ export default function AdminGeneratePage() {
       <div className="mt-8 card p-6">
         <h2 className="text-lg font-semibold mb-4">投稿スケジュール</h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="p-4 rounded-lg bg-[#fdf2f3]">
-            <h3 className="font-semibold">愛</h3>
-            <p className="text-sm text-secondary mt-1">奇数日（1日、3日、5日...）</p>
-          </div>
-          <div className="p-4 rounded-lg bg-[#f0f7f9]">
-            <h3 className="font-semibold">宇野</h3>
-            <p className="text-sm text-secondary mt-1">月・水・金・日曜日</p>
-            <p className="text-xs text-secondary">日曜日は甘味回</p>
-          </div>
-          <div className="p-4 rounded-lg bg-[#f5f7f2]">
-            <h3 className="font-semibold">幸地</h3>
-            <p className="text-sm text-secondary mt-1">偶数日（2日、4日、6日...）</p>
-          </div>
+          {(["ai", "uno", "kochi"] as PersonaId[]).map((id) => {
+            const p = PERSONA_DISPLAY[id];
+            const scheduleNote =
+              id === "ai"
+                ? "奇数日（1日、3日、5日...）"
+                : id === "uno"
+                ? "月・水・金・日曜日（日曜は甘味回）"
+                : "偶数日（2日、4日、6日...）";
+            return (
+              <div key={id} className={`p-4 rounded-lg ${p.bgClass}`}>
+                <h3 className="font-semibold">{p.blogTitle}</h3>
+                <p className="text-xs text-secondary">{p.name}</p>
+                <p className="text-sm text-secondary mt-1">{scheduleNote}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

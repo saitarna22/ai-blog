@@ -65,6 +65,13 @@ function docToPersona(doc: FirebaseFirestore.DocumentSnapshot): Persona {
     writingRules: data.writingRules || [],
     formats: data.formats || [],
     imageHint: data.imageHint,
+    blogTitle: data.blogTitle || "",
+    storyline: data.storyline
+      ? {
+          ...data.storyline,
+          updatedAt: data.storyline.updatedAt?.toDate() || new Date(),
+        }
+      : undefined,
     createdAt: data.createdAt?.toDate() || new Date(),
     updatedAt: data.updatedAt?.toDate() || new Date(),
   };

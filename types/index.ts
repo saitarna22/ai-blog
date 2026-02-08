@@ -14,6 +14,21 @@ export interface PersonaFormat {
   }[];
 }
 
+export interface StoryThread {
+  threadId: string;
+  description: string;
+  startDate: string;
+  status: "active" | "resolved" | "dormant";
+}
+
+export interface StorylineState {
+  currentSituation: string;
+  ongoingThreads: StoryThread[];
+  recentEvents: string[];
+  recentMood: string;
+  updatedAt: Date;
+}
+
 export interface Persona {
   personaId: PersonaId;
   name: string;
@@ -25,6 +40,8 @@ export interface Persona {
   writingRules: string[];
   formats: PersonaFormat[];
   imageHint: string;
+  blogTitle: string;
+  storyline?: StorylineState;
   createdAt: Date;
   updatedAt: Date;
 }

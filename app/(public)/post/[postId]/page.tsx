@@ -3,19 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPost } from "@/lib/db/posts";
 import { formatDateDisplay } from "@/lib/utils/date";
-import { PersonaId } from "@/types";
+import { personaNames, PERSONA_DISPLAY } from "@/lib/constants/personas";
 
 export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ postId: string }>;
 }
-
-const personaNames: Record<PersonaId, string> = {
-  ai: "愛",
-  uno: "宇野",
-  kochi: "幸地 仁 殿",
-};
 
 export async function generateMetadata({ params }: PageProps) {
   const { postId } = await params;
@@ -25,9 +19,28 @@ export async function generateMetadata({ params }: PageProps) {
     return { title: "Not Found" };
   }
 
+  const title = `${post.title} | ${PERSONA_DISPLAY[post.personaId].blogTitle}`;
+  const description = getExcerpt(post);
+
   return {
-    title: `${post.title} | ${personaNames[post.personaId]}の日記`,
-    description: getExcerpt(post),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      ...(post.image?.url && {
+        images: [{ url: post.image.url }],
+      }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(post.image?.url && {
+        images: [post.image.url],
+      }),
+    },
   };
 }
 
@@ -106,7 +119,7 @@ export default async function PostDetailPage({ params }: PageProps) {
       <footer className="mt-12 pt-8 border-t border-border">
         <div className="flex items-center justify-between">
           <Link href={`/p/${post.personaId}`} className="text-sm text-secondary hover:text-accent">
-            ← {personaNames[post.personaId]}の日記一覧
+            ← {PERSONA_DISPLAY[post.personaId].blogTitle}
           </Link>
           <Link href={`/d/${post.dateKey}`} className="text-sm text-secondary hover:text-accent">
             この日の日記 →
