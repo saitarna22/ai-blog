@@ -1,11 +1,116 @@
 # Vercel デプロイ手順書
 
-## 前提条件
+---
 
-- GitHub にリポジトリが push 済みであること
-- Vercel アカウントを持っていること
-- Firebase プロジェクトが作成済みであること（Firestore / Auth / Storage 有効化済み）
-- OpenAI API キーを取得済みであること
+## Step 0: 前提準備
+
+以下の3つのサービスのセットアップを先に完了させる。
+
+### 0-1: Vercel アカウント作成
+
+1. https://vercel.com にアクセス
+2. 「Sign Up」をクリック
+3. **「Continue with GitHub」** を選択（GitHub連携が最もスムーズ）
+4. GitHub の認可画面が表示されたら「Authorize Vercel」をクリック
+5. Vercel のダッシュボードが表示されれば完了
+
+> プラン選択: まずは **Hobby（無料）** で問題ない。
+> ただし Hobby プランでは Serverless Function のタイムアウトが最大60秒のため、
+> 画像生成（DALL-E 3）を含む日次生成がタイムアウトする可能性がある。
+> 運用開始後に問題があれば **Pro プラン（$20/月）** へのアップグレードを検討。
+
+### 0-2: Firebase プロジェクト作成
+
+#### プロジェクト作成
+
+1. https://console.firebase.google.com にアクセス（Google アカウントでログイン）
+2. 「プロジェクトを追加」をクリック
+3. プロジェクト名を入力（例: `ai-blog`）
+4. Google Analytics の設定 → 今回は不要なのでオフでOK → 「プロジェクトを作成」
+5. 作成完了したら「続行」をクリック
+
+#### Firestore 有効化
+
+1. 左メニュー「構築」→「Firestore Database」をクリック
+2. 「データベースを作成」をクリック
+3. ロケーション選択: **asia-northeast1（東京）** を推奨
+4. セキュリティルール: 「テストモードで開始」を選択（後で本番ルールに変更する）
+5. 「作成」をクリック
+
+#### Authentication 有効化
+
+1. 左メニュー「構築」→「Authentication」をクリック
+2. 「始める」をクリック
+3. ログイン方法タブ → 「Google」をクリック
+4. 「有効にする」トグルをオンにする
+5. プロジェクトのサポートメール: 自分のメールアドレスを選択
+6. 「保存」をクリック
+
+#### Cloud Storage 有効化
+
+1. 左メニュー「構築」→「Storage」をクリック
+2. 「始める」をクリック
+3. セキュリティルール: 「テストモードで開始」を選択
+4. ロケーション: Firestore と同じ **asia-northeast1** を選択
+5. 「完了」をクリック
+
+#### Web アプリ登録（Client SDK 用の設定値を取得）
+
+1. プロジェクト概要ページ（左上の家アイコン）に戻る
+2. 「アプリを追加」→ **Web（`</>`アイコン）** をクリック
+3. アプリのニックネーム: `ai-blog-web`（任意）
+4. 「Firebase Hosting を設定」はチェック不要
+5. 「アプリを登録」をクリック
+6. 表示される `firebaseConfig` の値を控える:
+   ```js
+   const firebaseConfig = {
+     apiKey: "AIza...",           // → NEXT_PUBLIC_FIREBASE_API_KEY
+     authDomain: "xxx.firebaseapp.com",  // → NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+     projectId: "ai-blog-xxx",   // → NEXT_PUBLIC_FIREBASE_PROJECT_ID
+     storageBucket: "ai-blog-xxx.firebasestorage.app", // → NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+   };
+   ```
+7. 「コンソールに進む」をクリック
+
+#### サービスアカウントキーの取得（Admin SDK 用）
+
+1. Firebase Console 左上の歯車アイコン → 「プロジェクトの設定」
+2. 「サービス アカウント」タブをクリック
+3. 「新しい秘密鍵の生成」ボタンをクリック
+4. 確認ダイアログで「キーを生成」をクリック → JSON ファイルがダウンロードされる
+5. JSON を開いて以下の値を控える:
+   ```json
+   {
+     "project_id": "ai-blog-xxx",   // → FIREBASE_PROJECT_ID
+     "client_email": "firebase-adminsdk-xxxxx@ai-blog-xxx.iam.gserviceaccount.com", // → FIREBASE_CLIENT_EMAIL
+     "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n" // → FIREBASE_PRIVATE_KEY
+   }
+   ```
+
+> **重要**: ダウンロードした JSON はパスワード同然。Git にコミットしないこと。
+> 環境変数に設定したら、ローカルの JSON は安全な場所に保管するか削除する。
+
+### 0-3: OpenAI API キーの取得
+
+1. https://platform.openai.com にアクセス（アカウントがなければ Sign Up）
+2. 右上のアイコン → 「Your profile」→ 左メニュー「API keys」
+   （直接 URL: https://platform.openai.com/api-keys ）
+3. 「Create new secret key」をクリック
+4. Name: `ai-blog`（任意）→ 「Create secret key」
+5. 表示されたキー（`sk-...`）をコピーして控える
+
+> **重要**: キーは一度しか表示されない。コピーし忘れたら再生成が必要。
+
+#### 料金について
+
+| モデル | 用途 | 目安コスト（1記事あたり） |
+|--------|------|-------------------------|
+| GPT-4o | テキスト生成 | 約 $0.01〜0.03 |
+| DALL-E 3 | 画像生成 | 約 $0.04（1024x1024） |
+
+- 3人分の日記を毎日生成した場合: 月 **約 $5〜7** 程度
+- OpenAI の Usage ページ（ https://platform.openai.com/usage ）で使用量を確認可能
+- 予算上限の設定を推奨: Settings → Limits → 「Set a monthly budget」
 
 ---
 
