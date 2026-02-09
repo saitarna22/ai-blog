@@ -135,17 +135,20 @@ export const IMAGE_STYLE_PRESETS: Record<ImageStyleKey, string> = {
 export interface GenerateDailyRequest {
   dateKey?: string;
   force?: boolean;
+  additionalInstructions?: string;
 }
 
 export interface GenerateRequest {
   dateKey: string;
   personaId: PersonaId;
   force?: boolean;
+  additionalInstructions?: string;
 }
 
 export interface RegenerateRequest {
   parts: ("text" | "image")[];
   force?: boolean;
+  additionalInstructions?: string;
 }
 
 export interface ApiResponse<T = unknown> {

@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as GenerateDailyRequest;
     const dateKey = body.dateKey || getTodayDateKey();
     const force = body.force || false;
+    const additionalInstructions = body.additionalInstructions;
 
     if (!isValidDateKey(dateKey)) {
       return NextResponse.json(
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     // Generate posts for each persona
     const results = await Promise.all(
       personasToGenerate.map((persona) =>
-        generatePostForPersona(persona.personaId, dateKey, force)
+        generatePostForPersona(persona.personaId, dateKey, force, additionalInstructions)
       )
     );
 

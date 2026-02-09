@@ -24,6 +24,7 @@ export async function generateText(params: {
   dateKey: string;
   isFirstPost: boolean;
   previousContext?: string;
+  additionalInstructions?: string;
 }): Promise<GeneratedContent> {
   const model = process.env.OPENAI_TEXT_MODEL || "gpt-4o";
 

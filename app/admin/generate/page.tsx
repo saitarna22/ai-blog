@@ -12,6 +12,7 @@ export default function AdminGeneratePage() {
   const [dateKey, setDateKey] = useState(getTodayDateKey());
   const [personaId, setPersonaId] = useState<PersonaId>("ai");
   const [force, setForce] = useState(false);
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     success: boolean;
@@ -28,7 +29,9 @@ export default function AdminGeneratePage() {
 
       const url = mode === "daily" ? "/api/v1/generate/daily" : "/api/v1/generate";
       const body =
-        mode === "daily" ? { dateKey, force } : { dateKey, personaId, force };
+        mode === "daily"
+          ? { dateKey, force, ...(additionalInstructions && { additionalInstructions }) }
+          : { dateKey, personaId, force, ...(additionalInstructions && { additionalInstructions }) };
 
       const res = await fetch(url, {
         method: "POST",
@@ -127,6 +130,20 @@ export default function AdminGeneratePage() {
                 </select>
               </div>
             )}
+
+            <div>
+              <label className="block text-sm font-medium mb-2">追加指示</label>
+              <textarea
+                value={additionalInstructions}
+                onChange={(e) => setAdditionalInstructions(e.target.value)}
+                rows={3}
+                placeholder="例: 初投稿なので自己紹介を含めてください"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+              />
+              <p className="text-xs text-secondary mt-1">
+                生成プロンプトに追加する指示（任意）
+              </p>
+            </div>
 
             <div>
               <label className="flex items-center gap-2">

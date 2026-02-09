@@ -26,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
   try {
     const body = (await request.json()) as RegenerateRequest;
-    const { parts, force = false } = body;
+    const { parts, force = false, additionalInstructions } = body;
 
     if (!parts || !Array.isArray(parts) || parts.length === 0) {
       return NextResponse.json(
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const result = await regeneratePostParts(postId, validParts as ("text" | "image")[], force);
+    const result = await regeneratePostParts(postId, validParts as ("text" | "image")[], force, additionalInstructions);
 
     if (result.success) {
       return NextResponse.json({

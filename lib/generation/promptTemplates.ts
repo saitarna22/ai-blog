@@ -20,8 +20,9 @@ export function buildTextPrompt(params: {
   dateKey: string;
   isFirstPost: boolean;
   previousContext?: string;
+  additionalInstructions?: string;
 }): string {
-  const { persona, format, dateKey, isFirstPost, previousContext } = params;
+  const { persona, format, dateKey, isFirstPost, previousContext, additionalInstructions } = params;
 
   const writingRulesText = persona.writingRules.map((r, i) => `${i + 1}. ${r}`).join("\n");
 
@@ -117,6 +118,13 @@ ${sectionsSchema}
 ${previousContext}
 
 これを踏まえて、続きの日常を書いてください。
+
+`;
+  }
+
+  if (additionalInstructions) {
+    prompt += `# 追加指示
+${additionalInstructions}
 
 `;
   }

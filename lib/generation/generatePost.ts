@@ -19,7 +19,8 @@ export interface GeneratePostResult {
 export async function generatePostForPersona(
   personaId: PersonaId,
   dateKey: string,
-  force: boolean = false
+  force: boolean = false,
+  additionalInstructions?: string
 ): Promise<GeneratePostResult> {
   const postId = generatePostId(dateKey, personaId);
 
@@ -68,6 +69,7 @@ export async function generatePostForPersona(
       dateKey,
       isFirstPost,
       previousContext,
+      additionalInstructions,
     });
 
     // Generate image with retries
@@ -154,7 +156,8 @@ export async function generatePostForPersona(
 export async function regeneratePostParts(
   postId: string,
   parts: ("text" | "image")[],
-  force: boolean = false
+  force: boolean = false,
+  additionalInstructions?: string
 ): Promise<GeneratePostResult> {
   const existingPost = await getPost(postId);
   if (!existingPost) {
@@ -187,6 +190,7 @@ export async function regeneratePostParts(
         format,
         dateKey: existingPost.dateKey,
         isFirstPost: false,
+        additionalInstructions,
       });
 
       updates.title = generatedContent.title;

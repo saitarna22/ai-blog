@@ -22,6 +22,11 @@ export default function AdminPostEditPage({ params }: PageProps) {
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [regeneratingImage, setRegeneratingImage] = useState(false);
+  const [regeneratingText, setRegeneratingText] = useState(false);
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
@@ -124,6 +129,77 @@ export default function AdminPostEditPage({ params }: PageProps) {
     } finally {
       setRegeneratingImage(false);
     }
+  }
+
+  async function handleRegenerateText() {
+    if (!confirm("テキストを再生成しますか？現在の内容は上書きされます。")) return;
+
+    setRegeneratingText(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+      const res = await fetch(`/api/v1/posts/${postId}/regenerate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          parts: ["text"],
+          ...(additionalInstructions && { additionalInstructions }),
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to regenerate text");
+      await fetchPost();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Regenerate text failed");
+    } finally {
+      setRegeneratingText(false);
+    }
+  }
+
+  async function handleUploadImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch(`/api/admin/posts/${postId}/upload-image`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload image");
+      await fetchPost();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
+    }
+  }
+
+  function getImagePrompt(): string {
+    if (post?.image?.prompt) return post.image.prompt;
+    if (!post) return "";
+    return `${post.title} - ${personaNames[post.personaId]}の日記イラスト`;
+  }
+
+  async function handleCopyPrompt() {
+    await navigator.clipboard.writeText(getImagePrompt());
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 2000);
   }
 
   function updateSection(index: number, updates: Partial<PostSection>) {
@@ -281,15 +357,48 @@ export default function AdminPostEditPage({ params }: PageProps) {
           </div>
 
           <div className="card p-6">
+            <h3 className="font-semibold mb-4">テキスト再生成</h3>
+            <textarea
+              value={additionalInstructions}
+              onChange={(e) => setAdditionalInstructions(e.target.value)}
+              rows={3}
+              placeholder="例: バレンタインの話題を入れてください"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent text-sm"
+            />
+            <p className="text-xs text-secondary mt-1 mb-3">
+              追加指示（任意）
+            </p>
+            <button
+              onClick={handleRegenerateText}
+              disabled={regeneratingText}
+              className="w-full btn btn-secondary text-sm"
+            >
+              {regeneratingText ? "テキスト再生成中..." : "テキスト再生成"}
+            </button>
+          </div>
+
+          <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">画像</h3>
-              <button
-                onClick={handleRegenerateImage}
-                disabled={regeneratingImage}
-                className="text-sm text-accent hover:underline"
-              >
-                {regeneratingImage ? "再生成中..." : "再生成"}
-              </button>
+              <div className="flex gap-2">
+                <label className={`text-sm cursor-pointer ${uploadingImage ? "text-secondary" : "text-accent hover:underline"}`}>
+                  {uploadingImage ? "アップロード中..." : "アップロード"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadImage}
+                    disabled={uploadingImage}
+                    className="hidden"
+                  />
+                </label>
+                <button
+                  onClick={handleRegenerateImage}
+                  disabled={regeneratingImage}
+                  className="text-sm text-accent hover:underline"
+                >
+                  {regeneratingImage ? "再生成中..." : "再生成"}
+                </button>
+              </div>
             </div>
             {post.image?.url ? (
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
@@ -310,6 +419,27 @@ export default function AdminPostEditPage({ params }: PageProps) {
                 スタイル: {post.image.styleKey}
               </p>
             )}
+            <div className="mt-3">
+              <button
+                onClick={() => setShowPrompt(!showPrompt)}
+                className="text-xs text-secondary hover:text-primary"
+              >
+                {showPrompt ? "プロンプトを隠す ▲" : "プロンプトを表示 ▼"}
+              </button>
+              {showPrompt && (
+                <div className="mt-2">
+                  <pre className="text-xs bg-muted p-3 rounded-lg whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
+                    {getImagePrompt()}
+                  </pre>
+                  <button
+                    onClick={handleCopyPrompt}
+                    className="text-xs text-accent hover:underline mt-1"
+                  >
+                    {promptCopied ? "コピーしました" : "コピー"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

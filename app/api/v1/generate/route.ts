@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = (await request.json()) as GenerateRequest;
-    const { dateKey, personaId, force = false } = body;
+    const { dateKey, personaId, force = false, additionalInstructions } = body;
 
     if (!dateKey || !isValidDateKey(dateKey)) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await generatePostForPersona(personaId as PersonaId, dateKey, force);
+    const result = await generatePostForPersona(personaId as PersonaId, dateKey, force, additionalInstructions);
 
     if (result.success) {
       return NextResponse.json({
