@@ -44,8 +44,9 @@ export async function createJob(
   const db = getAdminFirestore();
   const jobId = job.jobId || generateJobId();
 
+  const jobData = JSON.parse(JSON.stringify(job));
   await db.collection(COLLECTION).doc(jobId).set({
-    ...job,
+    ...jobData,
     jobId,
     status: "pending",
     createdAt: FieldValue.serverTimestamp(),
@@ -69,7 +70,7 @@ export async function completeJob(
   const db = getAdminFirestore();
   await db.collection(COLLECTION).doc(jobId).update({
     status: result.success ? "completed" : "failed",
-    result,
+    result: JSON.parse(JSON.stringify(result)),
     completedAt: FieldValue.serverTimestamp(),
   });
 }
