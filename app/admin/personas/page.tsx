@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllPersonas } from "@/lib/db/personas";
+import SeedButton from "@/components/admin/SeedButton";
 
 export const dynamic = "force-dynamic";
 
@@ -13,12 +14,14 @@ export default async function AdminPersonasPage() {
       </div>
 
       {personas.length === 0 ? (
-        <div className="card p-12 text-center">
-          <p className="text-secondary mb-4">人格が登録されていません</p>
-          <p className="text-sm text-secondary">
-            Firestoreの personas コレクションに直接追加するか、
-            下のサンプルデータを参考にしてください。
-          </p>
+        <div className="space-y-6">
+          <div className="card p-12 text-center">
+            <p className="text-secondary mb-4">人格が登録されていません</p>
+            <p className="text-sm text-secondary">
+              下のボタンで3人のペルソナを一括登録できます。
+            </p>
+          </div>
+          <SeedButton />
         </div>
       ) : (
         <div className="grid gap-4">
