@@ -127,7 +127,7 @@ export async function generatePostForPersona(
         retries: imageRetries,
         lastError: lastImageError ?? null,
       },
-      personaSnapshot: persona,
+      personaSnapshot: JSON.parse(JSON.stringify(persona)),
     };
 
     // Create or update post
