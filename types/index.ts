@@ -70,7 +70,7 @@ export interface PostImage {
 export interface PostGeneration {
   jobId: string;
   retries: number;
-  lastError?: string;
+  lastError?: string | null;
 }
 
 export interface Post {

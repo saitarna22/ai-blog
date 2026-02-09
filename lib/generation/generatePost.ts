@@ -123,7 +123,7 @@ export async function generatePostForPersona(
       generation: {
         jobId,
         retries: imageRetries,
-        lastError: lastImageError,
+        lastError: lastImageError ?? null,
       },
       personaSnapshot: persona,
     };
