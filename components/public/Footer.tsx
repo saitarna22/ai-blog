@@ -11,7 +11,7 @@ export default function Footer() {
               詳細
             </Link>
           </p>
-          <p>創作日記</p>
+          <p>AI創作日記</p>
         </div>
       </div>
     </footer>

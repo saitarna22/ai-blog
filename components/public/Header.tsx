@@ -7,7 +7,7 @@ export default function Header() {
       <div className="max-w-4xl mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           <Link href="/" className="text-xl font-semibold text-primary">
-            創作日記
+            AI創作日記
           </Link>
           <div className="flex items-center gap-6 text-sm">
             <Link href="/p/ai" className="hover:text-accent">

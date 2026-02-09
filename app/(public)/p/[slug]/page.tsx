@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps) {
 
   const info = PERSONA_DISPLAY[slug as PersonaId];
   return {
-    title: `${info.blogTitle} | 創作日記`,
+    title: `${info.blogTitle} | AI創作日記`,
     description: info.description,
   };
 }

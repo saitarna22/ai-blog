@@ -14,12 +14,12 @@ export async function generateMetadata({ searchParams }: PageProps) {
 
   if (month) {
     return {
-      title: `${formatMonthDisplay(month)}のアーカイブ | 創作日記`,
+      title: `${formatMonthDisplay(month)}のアーカイブ | AI創作日記`,
     };
   }
 
   return {
-    title: "アーカイブ | 創作日記",
+    title: "アーカイブ | AI創作日記",
   };
 }
 

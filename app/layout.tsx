@@ -6,14 +6,14 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://example.com";
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "創作日記",
-    template: "%s | 創作日記",
+    default: "AI創作日記",
+    template: "%s | AI創作日記",
   },
   description: "3人の人格が綴る、創作による日記ブログ",
   openGraph: {
     type: "website",
     locale: "ja_JP",
-    siteName: "創作日記",
+    siteName: "AI創作日記",
   },
   twitter: {
     card: "summary_large_image",

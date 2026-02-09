@@ -18,7 +18,7 @@ export const PERSONA_DISPLAY: Record<PersonaId, {
   },
   uno: {
     name: "宇野 康二",
-    blogTitle: "宇野康二の散歩日和",
+    blogTitle: "宇野の散歩日和",
     shortName: "宇野",
     description: "63歳、元中学校国語教師。京都・北白川で妻と穏やかな日々を過ごす。散歩と甘味処巡りが日課。",
     bgClass: "bg-[#f0f7f9]",

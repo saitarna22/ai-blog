@@ -3,8 +3,8 @@ import { PERSONA_DISPLAY } from "@/lib/constants/personas";
 import { PersonaId } from "@/types";
 
 export const metadata: Metadata = {
-  title: "このサイトについて | 創作日記",
-  description: "創作日記についての説明",
+  title: "このサイトについて | AI創作日記",
+  description: "AI創作日記についての説明",
 };
 
 export default function AboutPage() {
@@ -16,7 +16,7 @@ export default function AboutPage() {
 
       <div className="card p-8 space-y-6">
         <section>
-          <h2 className="text-xl font-semibold mb-3">創作日記とは</h2>
+          <h2 className="text-xl font-semibold mb-3">AI創作日記とは</h2>
           <p className="text-secondary leading-relaxed">
             このサイトは、3人の架空の人格がそれぞれの人生を生きながら綴る、
             <strong>創作による日記ブログ</strong>です。

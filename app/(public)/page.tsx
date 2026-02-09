@@ -12,7 +12,7 @@ export default async function HomePage() {
   return (
     <div>
       <section className="mb-12 text-center">
-        <h1 className="text-3xl font-bold mb-4">創作日記</h1>
+        <h1 className="text-3xl font-bold mb-4">AI創作日記</h1>
         <p className="text-secondary max-w-xl mx-auto">
           3人の人格が、それぞれの人生を生きながら綴る日記。
           <br />

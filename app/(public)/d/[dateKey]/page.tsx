@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
-    title: `${formatDateDisplay(dateKey)}の日記 | 創作日記`,
+    title: `${formatDateDisplay(dateKey)}の日記 | AI創作日記`,
   };
 }
 
