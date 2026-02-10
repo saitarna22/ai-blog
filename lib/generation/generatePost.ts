@@ -3,7 +3,7 @@ import { getPersona, hasAnyPosts, updatePersona } from "@/lib/db/personas";
 import { createPost, updatePost, getPost, getLatestPostByPersona } from "@/lib/db/posts";
 import { createJob, startJob, completeJob, failJob } from "@/lib/db/jobs";
 import { generateText } from "./textPrompt";
-import { generateImage, pickRandomStyle } from "./imagePrompt";
+import { generateImage, getPersonaStyle } from "./imagePrompt";
 import { pickFormat } from "./pickFormat";
 import { generatePostId } from "@/lib/utils/validators";
 import { buildStorylineUpdatePrompt } from "./promptTemplates";
@@ -73,7 +73,7 @@ export async function generatePostForPersona(
     });
 
     // Generate image with retries
-    const styleKey = pickRandomStyle();
+    const styleKey = getPersonaStyle(personaId);
     let imageResult: { url: string; prompt: string } | null = null;
     let imageRetries = 0;
     let lastImageError: string | undefined;
@@ -199,7 +199,7 @@ export async function regeneratePostParts(
     }
 
     if (parts.includes("image")) {
-      const styleKey = pickRandomStyle();
+      const styleKey = getPersonaStyle(existingPost.personaId);
       const description =
         parts.includes("text") && updates.title
           ? updates.title

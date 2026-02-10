@@ -121,14 +121,13 @@ export interface Admin {
   createdAt: Date;
 }
 
-// Image style presets
-export type ImageStyleKey = "pencil_sketch" | "watercolor" | "urban_sketch" | "diary_doodle";
+// Image style presets (persona-specific)
+export type ImageStyleKey = "watercolor_warm" | "sumi_ink" | "colorful_sketch";
 
 export const IMAGE_STYLE_PRESETS: Record<ImageStyleKey, string> = {
-  pencil_sketch: "Soft pencil sketch with gentle shading, loose lines",
-  watercolor: "Soft watercolor wash, muted colors, paper texture visible",
-  urban_sketch: "Urban sketching style, quick confident lines, minimal color",
-  diary_doodle: "Simple diary doodle, ballpoint pen, casual and intimate"
+  watercolor_warm: "Soft watercolor illustration with warm pastel tones (pink, peach, cream). Gentle washes of color, paper texture visible, intimate and cozy feeling",
+  sumi_ink: "Japanese sumi-e (ink wash painting) style with subtle indigo and grey-green tones. Elegant brushstrokes, plenty of white space, contemplative mood",
+  colorful_sketch: "Vibrant travel sketch with bold pen lines and cheerful watercolor splashes (orange, teal, yellow). Energetic and lively, like a travel journal illustration",
 };
 
 // API types

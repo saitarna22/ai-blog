@@ -13,17 +13,19 @@ function getOpenAI(): OpenAI {
   return openai;
 }
 
-// Base prompt for all images (Ai-chan's art style)
-const BASE_PROMPT = `A hand-drawn illustration created as if drawn by a 28-year-old woman in her personal diary.
+// Base prompt for all images
+const BASE_PROMPT = `A hand-drawn illustration for a personal diary blog.
 The drawing feels intimate, gentle, and slightly imperfect, like a sketch made to remember a moment rather than to show others.
 Soft lines, natural composition, warm and calm atmosphere.
 No photographic realism, no commercial illustration style.
-The image should feel like a memory, not a photo.`;
+The image should feel like a memory, not a photo.
+If any text, signage, labels, or writing appears in the image, it MUST be in Japanese (hiragana, katakana, or kanji). Never include English text or alphabet letters.`;
 
 // Negative prompt (things to avoid)
 const NEGATIVE_PROMPT = `photorealistic, ultra-detailed, 3D render, anime style, commercial illustration,
-logo, watermark, text, typography, poster design,
-high contrast lighting, dramatic shadows, advertising style`;
+logo, watermark, poster design,
+high contrast lighting, dramatic shadows, advertising style,
+English text, alphabet letters, Latin characters`;
 
 // Persona-specific hints
 const PERSONA_HINTS: Record<PersonaId, string> = {
@@ -107,19 +109,12 @@ async function uploadImageToStorage(imageUrl: string, postId: string): Promise<s
   return publicUrl;
 }
 
-export function pickRandomStyle(): ImageStyleKey {
-  const styles: ImageStyleKey[] = ["pencil_sketch", "watercolor", "urban_sketch", "diary_doodle"];
-  const weights = [0.3, 0.3, 0.2, 0.2]; // Slightly favor pencil and watercolor
+const PERSONA_STYLES: Record<PersonaId, ImageStyleKey> = {
+  ai: "watercolor_warm",
+  uno: "sumi_ink",
+  kochi: "colorful_sketch",
+};
 
-  const random = Math.random();
-  let cumulative = 0;
-
-  for (let i = 0; i < styles.length; i++) {
-    cumulative += weights[i];
-    if (random < cumulative) {
-      return styles[i];
-    }
-  }
-
-  return styles[0];
+export function getPersonaStyle(personaId: PersonaId): ImageStyleKey {
+  return PERSONA_STYLES[personaId];
 }
