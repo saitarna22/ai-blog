@@ -58,7 +58,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     await storageFile.makePublic();
 
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}?t=${Date.now()}`;
 
     await updatePost(postId, {
       image: {

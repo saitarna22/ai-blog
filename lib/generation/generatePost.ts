@@ -3,7 +3,7 @@ import { getPersona, hasAnyPosts, updatePersona } from "@/lib/db/personas";
 import { createPost, updatePost, getPost, getLatestPostByPersona } from "@/lib/db/posts";
 import { createJob, startJob, completeJob, failJob } from "@/lib/db/jobs";
 import { generateText } from "./textPrompt";
-import { generateImage, getPersonaStyle } from "./imagePrompt";
+import { generateImage, getPersonaStyle, buildImagePrompt } from "./imagePrompt";
 import { pickFormat } from "./pickFormat";
 import { generatePostId } from "@/lib/utils/validators";
 import { buildStorylineUpdatePrompt } from "./promptTemplates";
@@ -72,32 +72,15 @@ export async function generatePostForPersona(
       additionalInstructions,
     });
 
-    // Generate image with retries
+    // Build image prompt (for manual use / later regeneration)
     const styleKey = getPersonaStyle(personaId);
-    let imageResult: { url: string; prompt: string } | null = null;
-    let imageRetries = 0;
-    let lastImageError: string | undefined;
+    const imagePrompt = buildImagePrompt({
+      description: generatedContent.imageDescription,
+      personaId,
+      styleKey,
+    });
 
-    while (imageRetries <= MAX_IMAGE_RETRIES && !imageResult) {
-      try {
-        imageResult = await generateImage({
-          description: generatedContent.imageDescription,
-          personaId,
-          styleKey,
-          postId,
-        });
-      } catch (error) {
-        imageRetries++;
-        lastImageError = error instanceof Error ? error.message : String(error);
-        console.error(`Image generation attempt ${imageRetries} failed:`, error);
-
-        if (imageRetries > MAX_IMAGE_RETRIES) {
-          console.error("Max image retries exceeded, proceeding without image");
-        }
-      }
-    }
-
-    // Build post object
+    // Build post object (image is not auto-generated)
     const post: Omit<Post, "createdAt"> = {
       postId,
       slug: postId,
@@ -109,23 +92,17 @@ export async function generatePostForPersona(
         sections: generatedContent.sections,
       },
       tags: generatedContent.tags,
-      image: imageResult
-        ? {
-            url: imageResult.url,
-            styleKey,
-            prompt: imageResult.prompt,
-          }
-        : {
-            url: "",
-            styleKey,
-            prompt: "",
-          },
+      image: {
+        url: "",
+        styleKey,
+        prompt: imagePrompt,
+      },
       formatId: format.formatId,
       generatedAt: new Date(),
       generation: {
         jobId,
-        retries: imageRetries,
-        lastError: lastImageError ?? null,
+        retries: 0,
+        lastError: null,
       },
       personaSnapshot: JSON.parse(JSON.stringify(persona)),
     };

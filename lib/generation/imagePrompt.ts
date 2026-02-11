@@ -34,6 +34,26 @@ const PERSONA_HINTS: Record<PersonaId, string> = {
   kochi: "A travel scene somewhere in Japan: local trains, guesthouses, street food stalls, unexpected encounters. Emphasize adventure and curiosity.",
 };
 
+export function buildImagePrompt(params: {
+  description: string;
+  personaId: PersonaId;
+  styleKey: ImageStyleKey;
+}): string {
+  const { description, personaId, styleKey } = params;
+  const stylePrompt = IMAGE_STYLE_PRESETS[styleKey];
+  const personaHint = PERSONA_HINTS[personaId];
+
+  return `${BASE_PROMPT}
+
+Style: ${stylePrompt}
+
+Subject: ${description}
+
+${personaHint}
+
+Avoid: ${NEGATIVE_PROMPT}`;
+}
+
 export async function generateImage(params: {
   description: string;
   personaId: PersonaId;
@@ -43,18 +63,7 @@ export async function generateImage(params: {
   const { description, personaId, styleKey, postId } = params;
   const model = process.env.OPENAI_IMAGE_MODEL || "dall-e-3";
 
-  const stylePrompt = IMAGE_STYLE_PRESETS[styleKey];
-  const personaHint = PERSONA_HINTS[personaId];
-
-  const fullPrompt = `${BASE_PROMPT}
-
-Style: ${stylePrompt}
-
-Subject: ${description}
-
-${personaHint}
-
-Avoid: ${NEGATIVE_PROMPT}`;
+  const fullPrompt = buildImagePrompt({ description, personaId, styleKey });
 
   const response = await getOpenAI().images.generate({
     model,
@@ -104,8 +113,8 @@ async function uploadImageToStorage(imageUrl: string, postId: string): Promise<s
   // Make file public
   await file.makePublic();
 
-  // Get public URL
-  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+  // Get public URL (with cache-busting timestamp)
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}?t=${Date.now()}`;
   return publicUrl;
 }
 
