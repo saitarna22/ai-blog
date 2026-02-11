@@ -5,6 +5,7 @@ import {
   buildTextPrompt,
   parseGeneratedContent,
   GeneratedContent,
+  RecentPostSummary,
 } from "./promptTemplates";
 
 let openai: OpenAI | null = null;
@@ -23,7 +24,7 @@ export async function generateText(params: {
   format: PersonaFormat;
   dateKey: string;
   isFirstPost: boolean;
-  previousContext?: string;
+  recentPosts?: RecentPostSummary[];
   additionalInstructions?: string;
 }): Promise<GeneratedContent> {
   const model = process.env.OPENAI_TEXT_MODEL || "gpt-4o";

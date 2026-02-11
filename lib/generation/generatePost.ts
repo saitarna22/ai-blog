@@ -1,6 +1,6 @@
 import { Post, Persona, PersonaId, StorylineState } from "@/types";
 import { getPersona, hasAnyPosts, updatePersona } from "@/lib/db/personas";
-import { createPost, updatePost, getPost, getLatestPostByPersona } from "@/lib/db/posts";
+import { createPost, updatePost, getPost, getRecentPostsByPersona } from "@/lib/db/posts";
 import { createJob, startJob, completeJob, failJob } from "@/lib/db/jobs";
 import { generateText } from "./textPrompt";
 import { generateImage, getPersonaStyle, buildImagePrompt } from "./imagePrompt";
@@ -50,12 +50,16 @@ export async function generatePostForPersona(
     // Check if this is the first post
     const isFirstPost = !(await hasAnyPosts(personaId));
 
-    // Get previous context for continuity
-    let previousContext: string | undefined;
+    // Get recent posts for continuity and variety
+    let recentPosts: { dateKey: string; title: string; topics: string }[] | undefined;
     if (!isFirstPost) {
-      const lastPost = await getLatestPostByPersona(personaId);
-      if (lastPost) {
-        previousContext = summarizePost(lastPost);
+      const recent = await getRecentPostsByPersona(personaId, 3);
+      if (recent.length > 0) {
+        recentPosts = recent.map((p) => ({
+          dateKey: p.dateKey,
+          title: p.title,
+          topics: extractTopics(p),
+        }));
       }
     }
 
@@ -68,7 +72,7 @@ export async function generatePostForPersona(
       format,
       dateKey,
       isFirstPost,
-      previousContext,
+      recentPosts,
       additionalInstructions,
     });
 
@@ -210,12 +214,18 @@ export async function regeneratePostParts(
   }
 }
 
-function summarizePost(post: Post): string {
-  const title = post.title;
-  const firstSection = post.content.sections.find((s) => s.type === "text" && s.text);
-  const excerpt = firstSection?.text?.slice(0, 200) || "";
-
-  return `前回「${title}」では、${excerpt}...という内容でした。`;
+function extractTopics(post: Post): string {
+  const keywords: string[] = [];
+  for (const section of post.content.sections) {
+    if (section.type === "text" && section.text) {
+      keywords.push(section.text.slice(0, 80));
+    } else if (section.type === "bullets" && section.bullets) {
+      keywords.push(section.bullets.slice(0, 3).join("、"));
+    }
+  }
+  const tags = post.tags.length > 0 ? post.tags.join("・") : "";
+  const topicText = keywords.join(" / ");
+  return tags ? `${tags}（${topicText}）` : topicText;
 }
 
 /**

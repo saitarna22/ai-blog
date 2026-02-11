@@ -42,15 +42,21 @@ const PERSONA_KNOWLEDGE_THEMES: Record<PersonaId, string> = {
 - 銭湯・温泉の雑学（泉質の違い、入浴の効能、レトロ銭湯の魅力、番台文化）`,
 };
 
+export interface RecentPostSummary {
+  dateKey: string;
+  title: string;
+  topics: string;
+}
+
 export function buildTextPrompt(params: {
   persona: Persona;
   format: PersonaFormat;
   dateKey: string;
   isFirstPost: boolean;
-  previousContext?: string;
+  recentPosts?: RecentPostSummary[];
   additionalInstructions?: string;
 }): string {
-  const { persona, format, dateKey, isFirstPost, previousContext, additionalInstructions } = params;
+  const { persona, format, dateKey, isFirstPost, recentPosts, additionalInstructions } = params;
 
   const writingRulesText = persona.writingRules.map((r, i) => `${i + 1}. ${r}`).join("\n");
 
@@ -153,11 +159,13 @@ ${knowledgeThemes}
 `;
   }
 
-  if (previousContext) {
-    prompt += `# 前回の日記の要約
-${previousContext}
+  if (recentPosts && recentPosts.length > 0) {
+    prompt += `# 最近の投稿（重複回避のため必ず確認）
+${recentPosts.map((p) => `- ${p.dateKey}「${p.title}」: ${p.topics}`).join("\n")}
 
-これを踏まえて、続きの日常を書いてください。
+重要: 上記の投稿と同じテーマ・話題・エピソードは絶対に書かないでください。
+前回の内容を踏まえつつ、まったく別の出来事・視点・エピソードで新しい日記を書いてください。
+同じ食べ物、同じ場所、同じ行動の繰り返しは避け、この人格の日常の「別の一面」を描いてください。
 
 `;
   }

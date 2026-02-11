@@ -135,15 +135,19 @@ export async function deletePost(postId: string): Promise<void> {
 }
 
 export async function getLatestPostByPersona(personaId: PersonaId): Promise<Post | null> {
+  const posts = await getRecentPostsByPersona(personaId, 1);
+  return posts.length > 0 ? posts[0] : null;
+}
+
+export async function getRecentPostsByPersona(personaId: PersonaId, limit: number): Promise<Post[]> {
   const db = getAdminFirestore();
   const snapshot = await db
     .collection(COLLECTION)
     .where("personaId", "==", personaId)
     .orderBy("dateKey", "desc")
-    .limit(1)
+    .limit(limit)
     .get();
-  if (snapshot.empty) return null;
-  return docToPost(snapshot.docs[0]);
+  return snapshot.docs.map((doc) => docToPost(doc));
 }
 
 export async function getPostsForMonth(yearMonth: string): Promise<Post[]> {
