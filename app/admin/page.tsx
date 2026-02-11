@@ -35,7 +35,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-sm text-secondary mb-2">下書き</h2>
           <p className="text-3xl font-bold">{drafts.length}</p>
           <Link href="/admin/drafts" className="text-sm text-accent hover:underline">
-            下書き一覧 →
+            投稿一覧 →
           </Link>
         </div>
 
@@ -51,13 +51,13 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <section className="card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">最近の下書き</h2>
+            <h2 className="text-lg font-semibold">最近の投稿</h2>
             <Link href="/admin/drafts" className="text-sm text-accent hover:underline">
               すべて見る
             </Link>
           </div>
           {drafts.length === 0 ? (
-            <p className="text-secondary text-sm">下書きはありません</p>
+            <p className="text-secondary text-sm">投稿はありません</p>
           ) : (
             <ul className="space-y-3">
               {drafts.slice(0, 5).map((draft) => (

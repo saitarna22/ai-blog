@@ -44,7 +44,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: "/admin", label: "ダッシュボード" },
-    { href: "/admin/drafts", label: "下書き" },
+    { href: "/admin/drafts", label: "投稿一覧" },
     { href: "/admin/personas", label: "人格" },
     { href: "/admin/generate", label: "生成" },
     { href: "/admin/jobs", label: "ジョブ" },
@@ -65,9 +65,13 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                     key={item.href}
                     href={item.href}
                     className={`text-sm ${
-                      pathname === item.href
-                        ? "text-primary font-medium"
-                        : "text-secondary hover:text-primary"
+                      item.href === "/admin"
+                        ? pathname === "/admin"
+                          ? "text-primary font-medium"
+                          : "text-secondary hover:text-primary"
+                        : pathname.startsWith(item.href)
+                          ? "text-primary font-medium"
+                          : "text-secondary hover:text-primary"
                     }`}
                   >
                     {item.label}

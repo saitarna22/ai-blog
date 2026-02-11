@@ -78,8 +78,15 @@ export async function getPublishedPosts(limit?: number, startAfter?: string): Pr
 }
 
 export async function getDrafts(personaId?: PersonaId): Promise<Post[]> {
+  return getPostsByStatusAndPersona("draft", personaId);
+}
+
+export async function getPostsByStatusAndPersona(
+  status: PostStatus,
+  personaId?: PersonaId
+): Promise<Post[]> {
   const db = getAdminFirestore();
-  let query = db.collection(COLLECTION).where("status", "==", "draft");
+  let query = db.collection(COLLECTION).where("status", "==", status);
 
   if (personaId) {
     query = query.where("personaId", "==", personaId);

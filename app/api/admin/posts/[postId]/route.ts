@@ -55,12 +55,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   try {
     const body = await request.json();
-    const { title, content, tags } = body;
+    const { title, content, tags, status } = body;
 
     const updates: Record<string, unknown> = {};
     if (title !== undefined) updates.title = title;
     if (content !== undefined) updates.content = content;
     if (tags !== undefined) updates.tags = tags;
+    if (status !== undefined && (status === "draft" || status === "published" || status === "archived")) {
+      updates.status = status;
+    }
 
     await updatePost(postId, updates);
 

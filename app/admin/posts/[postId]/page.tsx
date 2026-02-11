@@ -105,6 +105,32 @@ export default function AdminPostEditPage({ params }: PageProps) {
     }
   }
 
+  async function handleUnpublish() {
+    if (!confirm("この記事を非公開（下書き）に戻しますか？")) return;
+
+    setPublishing(true);
+    setError(null);
+
+    try {
+      const token = await getToken();
+      const res = await fetch(`/api/admin/posts/${postId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "draft" }),
+      });
+
+      if (!res.ok) throw new Error("Failed to unpublish");
+      await fetchPost();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unpublish failed");
+    } finally {
+      setPublishing(false);
+    }
+  }
+
   async function handleRegenerateImage() {
     if (!confirm("画像を再生成しますか？")) return;
 
@@ -256,6 +282,15 @@ export default function AdminPostEditPage({ params }: PageProps) {
               className="btn btn-primary"
             >
               {publishing ? "公開中..." : "公開"}
+            </button>
+          )}
+          {post.status === "published" && (
+            <button
+              onClick={handleUnpublish}
+              disabled={publishing}
+              className="btn btn-secondary"
+            >
+              {publishing ? "処理中..." : "非公開にする"}
             </button>
           )}
         </div>
