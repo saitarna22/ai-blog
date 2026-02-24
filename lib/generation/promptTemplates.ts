@@ -1,5 +1,6 @@
 import { Persona, PersonaFormat, PersonaId } from "@/types";
 import { getSeasonalContext } from "@/lib/scheduler/schedule";
+import { parseDateKey } from "@/lib/utils/date";
 
 export const SYSTEM_PROMPT = `あなたは創作日記ライターです。与えられた人格（ペルソナ）になりきって、その人の視点で日記を書きます。
 
@@ -41,6 +42,29 @@ const PERSONA_KNOWLEDGE_THEMES: Record<PersonaId, string> = {
 - B級グルメ・郷土料理（各地のソウルフード、料理の由来、地域限定の食文化）
 - 銭湯・温泉の雑学（泉質の違い、入浴の効能、レトロ銭湯の魅力、番台文化）`,
 };
+
+/**
+ * 幸地の旅行先ローテーション判定（10日以上同じ場所なら移動時期）
+ */
+function shouldRotateTravel(persona: Persona, dateKey: string): boolean {
+  if (persona.personaId !== "kochi" || !persona.storyline) return false;
+
+  const activeThreads = persona.storyline.ongoingThreads.filter(
+    (t) => t.status === "active" && t.startDate
+  );
+  if (activeThreads.length === 0) return false;
+
+  const currentDate = parseDateKey(dateKey);
+  const oldestStart = activeThreads.reduce((oldest, t) => {
+    const d = parseDateKey(t.startDate);
+    return d < oldest ? d : oldest;
+  }, parseDateKey(activeThreads[0].startDate));
+
+  const diffDays = Math.floor(
+    (currentDate.getTime() - oldestStart.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  return diffDays >= 10;
+}
 
 export interface RecentPostSummary {
   dateKey: string;
@@ -114,6 +138,16 @@ ${sl.recentEvents.map((e) => `- ${e}`).join("\n")}
     }
     if (sl.recentMood) {
       prompt += `最近の気分: ${sl.recentMood}
+
+`;
+    }
+
+    // 幸地の旅行先ローテーション
+    if (shouldRotateTravel(persona, dateKey)) {
+      prompt += `# 旅先移動の指示
+幸地はそろそろ今の旅先を離れ、新しい土地へ移動するタイミングです。
+今回の日記では、次の目的地への移動や到着を自然に描いてください。
+最近訪れた場所とは異なる地方・エリアを選んでください。
 
 `;
     }
@@ -245,8 +279,9 @@ export function buildStorylineUpdatePrompt(params: {
   persona: Persona;
   generatedTitle: string;
   generatedContent: string;
+  dateKey: string;
 }): string {
-  const { persona, generatedTitle, generatedContent } = params;
+  const { persona, generatedTitle, generatedContent, dateKey } = params;
 
   const currentStoryline = persona.storyline;
 
@@ -292,7 +327,8 @@ ${currentStoryline.recentEvents.map((e) => `- ${e}`).join("\n")}
 - ongoingThreadsは最大5つまで。古いresolvedなものは削除してよい
 - recentEventsは最新3-5個のみ残す
 - 新しいストーリー展開があれば追加する
-- 解決したストーリーはresolvedにする`;
+- 解決したストーリーはresolvedにする${shouldRotateTravel(persona, dateKey) ? `
+- 【重要】旅行先の移動時期です。現在の旅行関連スレッドをresolvedにし、新しい旅先のスレッドをactiveで作成してください。currentSituationも新しい旅先を反映してください` : ""}`;
 
   return prompt;
 }

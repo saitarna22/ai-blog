@@ -119,7 +119,7 @@ export async function generatePostForPersona(
     }
 
     // Update storyline asynchronously (non-blocking)
-    updateStoryline(persona, generatedContent.title, generatedContent.sections).catch(
+    updateStoryline(persona, generatedContent.title, generatedContent.sections, dateKey).catch(
       (err) => console.error("Storyline update failed (non-critical):", err)
     );
 
@@ -234,7 +234,8 @@ function extractTopics(post: Post): string {
 async function updateStoryline(
   persona: Persona,
   generatedTitle: string,
-  sections: { type: string; text?: string; bullets?: string[] }[]
+  sections: { type: string; text?: string; bullets?: string[] }[],
+  dateKey: string
 ): Promise<void> {
   // OpenAI を動的にインポート（循環参照回避）
   const OpenAI = (await import("openai")).default;
@@ -253,6 +254,7 @@ async function updateStoryline(
     persona,
     generatedTitle,
     generatedContent: contentText,
+    dateKey,
   });
 
   const response = await openai.chat.completions.create({
