@@ -116,7 +116,6 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "mochi", title: "今日のもち", type: "text" as const, required: true },
             { key: "episode", title: "", type: "text" as const, required: true },
-            { key: "memo", title: "もちメモ", type: "bullets" as const, required: false },
           ],
         },
         {
@@ -160,7 +159,6 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "route", title: "今日のコース", type: "text" as const, required: true },
             { key: "scenery", title: "目に留まったもの", type: "text" as const, required: true },
-            { key: "memo", title: "散歩メモ", type: "bullets" as const, required: false },
           ],
         },
         {
@@ -194,7 +192,6 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "place", title: "今いるところ", type: "text" as const, required: true },
             { key: "experience", title: "体験したこと", type: "text" as const, required: true },
-            { key: "tips", title: "旅のメモ", type: "bullets" as const, required: false },
           ],
         },
         {
@@ -214,7 +211,6 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "shop", title: "今日の一軒", type: "text" as const, required: true },
             { key: "food", title: "食べたもの", type: "text" as const, required: true },
-            { key: "rating", title: "幸地メモ", type: "bullets" as const, required: false },
           ],
         },
       ];

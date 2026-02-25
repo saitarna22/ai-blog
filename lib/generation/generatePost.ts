@@ -118,10 +118,12 @@ export async function generatePostForPersona(
       await createPost(post);
     }
 
-    // Update storyline asynchronously (non-blocking)
-    updateStoryline(persona, generatedContent.title, generatedContent.sections, dateKey).catch(
-      (err) => console.error("Storyline update failed (non-critical):", err)
-    );
+    // Update storyline
+    try {
+      await updateStoryline(persona, generatedContent.title, generatedContent.sections, dateKey);
+    } catch (err) {
+      console.error("Storyline update failed (non-critical):", err);
+    }
 
     await completeJob(jobId, { success: true, postId });
     return { success: true, postId };

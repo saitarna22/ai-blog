@@ -44,6 +44,15 @@ const PERSONA_KNOWLEDGE_THEMES: Record<PersonaId, string> = {
 };
 
 /**
+ * スレッドの経過日数を計算
+ */
+function threadAgeDays(thread: { startDate: string }, dateKey: string): number {
+  const current = parseDateKey(dateKey);
+  const start = parseDateKey(thread.startDate);
+  return Math.floor((current.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+/**
  * 幸地の旅行先ローテーション判定（10日以上同じ場所なら移動時期）
  */
 function shouldRotateTravel(persona: Persona, dateKey: string): boolean {
@@ -54,16 +63,19 @@ function shouldRotateTravel(persona: Persona, dateKey: string): boolean {
   );
   if (activeThreads.length === 0) return false;
 
-  const currentDate = parseDateKey(dateKey);
-  const oldestStart = activeThreads.reduce((oldest, t) => {
-    const d = parseDateKey(t.startDate);
-    return d < oldest ? d : oldest;
-  }, parseDateKey(activeThreads[0].startDate));
+  const oldestAge = Math.max(...activeThreads.map((t) => threadAgeDays(t, dateKey)));
+  return oldestAge >= 10;
+}
 
-  const diffDays = Math.floor(
-    (currentDate.getTime() - oldestStart.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  return diffDays >= 10;
+/**
+ * 全ペルソナ共通：古くなったスレッド（7日以上）を検出して解消を促す
+ */
+function getStaleThreadNames(persona: Persona, dateKey: string): string[] {
+  if (!persona.storyline) return [];
+
+  return persona.storyline.ongoingThreads
+    .filter((t) => t.status === "active" && t.startDate && threadAgeDays(t, dateKey) >= 7)
+    .map((t) => t.description);
 }
 
 export interface RecentPostSummary {
@@ -138,6 +150,16 @@ ${sl.recentEvents.map((e) => `- ${e}`).join("\n")}
     }
     if (sl.recentMood) {
       prompt += `最近の気分: ${sl.recentMood}
+
+`;
+    }
+
+    // 全ペルソナ共通：古いストーリースレッドの話題転換
+    const staleThreads = getStaleThreadNames(persona, dateKey);
+    if (staleThreads.length > 0) {
+      prompt += `# 話題転換の指示
+以下のストーリーは十分に描かれたので、今回の日記ではこれらの話題から離れて新しい日常を描いてください:
+${staleThreads.map((t) => `- ${t}`).join("\n")}
 
 `;
     }
@@ -327,7 +349,8 @@ ${currentStoryline.recentEvents.map((e) => `- ${e}`).join("\n")}
 - ongoingThreadsは最大5つまで。古いresolvedなものは削除してよい
 - recentEventsは最新3-5個のみ残す
 - 新しいストーリー展開があれば追加する
-- 解決したストーリーはresolvedにする${shouldRotateTravel(persona, dateKey) ? `
+- 解決したストーリーはresolvedにする
+- startDateから7日以上経過したactiveスレッドはresolvedにし、新しい話題のスレッドに切り替えること${shouldRotateTravel(persona, dateKey) ? `
 - 【重要】旅行先の移動時期です。現在の旅行関連スレッドをresolvedにし、新しい旅先のスレッドをactiveで作成してください。currentSituationも新しい旅先を反映してください` : ""}`;
 
   return prompt;

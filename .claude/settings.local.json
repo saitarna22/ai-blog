@@ -8,7 +8,9 @@
       "Bash(npx next build:*)",
       "Bash(./node_modules/.bin/next build:*)",
       "Bash(./node_modules/.bin/tsc:*)",
-      "Bash(git -C /Users/saitama/App/ai-blog config user.email)"
+      "Bash(git -C /Users/saitama/App/ai-blog config user.email)",
+      "Bash(node:*)",
+      "Bash(source:*)"
     ]
   }
 }

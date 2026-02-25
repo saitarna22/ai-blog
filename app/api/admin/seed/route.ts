@@ -105,12 +105,6 @@ const seedPersonas = [
         sections: [
           { key: "mochi", title: "今日のもち", type: "text", required: true },
           { key: "episode", title: "", type: "text", required: true },
-          {
-            key: "memo",
-            title: "もちメモ",
-            type: "bullets",
-            required: false,
-          },
         ],
       },
       {
@@ -216,12 +210,6 @@ const seedPersonas = [
             type: "text",
             required: true,
           },
-          {
-            key: "memo",
-            title: "散歩メモ",
-            type: "bullets",
-            required: false,
-          },
         ],
       },
       {
@@ -302,12 +290,6 @@ const seedPersonas = [
             type: "text",
             required: true,
           },
-          {
-            key: "tips",
-            title: "旅のメモ",
-            type: "bullets",
-            required: false,
-          },
         ],
       },
       {
@@ -337,12 +319,6 @@ const seedPersonas = [
         sections: [
           { key: "shop", title: "今日の一軒", type: "text", required: true },
           { key: "food", title: "食べたもの", type: "text", required: true },
-          {
-            key: "rating",
-            title: "幸地メモ",
-            type: "bullets",
-            required: false,
-          },
         ],
       },
     ],
