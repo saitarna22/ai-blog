@@ -69,7 +69,7 @@ function docToPersona(doc: FirebaseFirestore.DocumentSnapshot): Persona {
     storyline: data.storyline
       ? {
           ...data.storyline,
-          updatedAt: data.storyline.updatedAt?.toDate() || new Date(),
+          updatedAt: data.storyline.updatedAt?.toDate?.() ?? (data.storyline.updatedAt ? new Date(data.storyline.updatedAt) : new Date()),
         }
       : undefined,
     createdAt: data.createdAt?.toDate() || new Date(),
