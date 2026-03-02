@@ -116,6 +116,7 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "mochi", title: "今日のもち", type: "text" as const, required: true },
             { key: "episode", title: "", type: "text" as const, required: true },
+            { key: "reflection", title: "もちと暮らして", type: "text" as const, required: false },
           ],
         },
         {
@@ -125,7 +126,7 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "outing", title: "今日のおでかけ", type: "text" as const, required: true },
             { key: "discovery", title: "見つけたもの", type: "text" as const, required: true },
-            { key: "haul", title: "買ったもの・食べたもの", type: "bullets" as const, required: false },
+            { key: "reflection", title: "帰り道で思ったこと", type: "text" as const, required: false },
           ],
         },
       ];
@@ -159,6 +160,7 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "route", title: "今日のコース", type: "text" as const, required: true },
             { key: "scenery", title: "目に留まったもの", type: "text" as const, required: true },
+            { key: "reflection", title: "歩きながら思ったこと", type: "text" as const, required: false },
           ],
         },
         {
@@ -192,6 +194,7 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "place", title: "今いるところ", type: "text" as const, required: true },
             { key: "experience", title: "体験したこと", type: "text" as const, required: true },
+            { key: "reflection", title: "旅の途中で思ったこと", type: "text" as const, required: false },
           ],
         },
         {
@@ -211,6 +214,7 @@ export function getDefaultFormats(personaId: PersonaId): PersonaFormat[] {
           sections: [
             { key: "shop", title: "今日の一軒", type: "text" as const, required: true },
             { key: "food", title: "食べたもの", type: "text" as const, required: true },
+            { key: "reflection", title: "食後のひとこと", type: "text" as const, required: false },
           ],
         },
       ];

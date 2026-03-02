@@ -105,6 +105,7 @@ const seedPersonas = [
         sections: [
           { key: "mochi", title: "今日のもち", type: "text", required: true },
           { key: "episode", title: "", type: "text", required: true },
+          { key: "reflection", title: "もちと暮らして", type: "text", required: false },
         ],
       },
       {
@@ -125,9 +126,9 @@ const seedPersonas = [
             required: true,
           },
           {
-            key: "haul",
-            title: "買ったもの・食べたもの",
-            type: "bullets",
+            key: "reflection",
+            title: "帰り道で思ったこと",
+            type: "text",
             required: false,
           },
         ],
@@ -210,6 +211,12 @@ const seedPersonas = [
             type: "text",
             required: true,
           },
+          {
+            key: "reflection",
+            title: "歩きながら思ったこと",
+            type: "text",
+            required: false,
+          },
         ],
       },
       {
@@ -290,6 +297,12 @@ const seedPersonas = [
             type: "text",
             required: true,
           },
+          {
+            key: "reflection",
+            title: "旅の途中で思ったこと",
+            type: "text",
+            required: false,
+          },
         ],
       },
       {
@@ -319,6 +332,7 @@ const seedPersonas = [
         sections: [
           { key: "shop", title: "今日の一軒", type: "text", required: true },
           { key: "food", title: "食べたもの", type: "text", required: true },
+          { key: "reflection", title: "食後のひとこと", type: "text", required: false },
         ],
       },
     ],
