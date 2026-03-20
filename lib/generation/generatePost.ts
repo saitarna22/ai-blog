@@ -284,9 +284,15 @@ async function updateStoryline(
 
   const parsed = JSON.parse(cleaned);
 
+  // startDateがないスレッドにはdateKeyをフォールバック設定
+  const threads = (parsed.ongoingThreads || []).slice(0, 5).map((t: Record<string, unknown>) => ({
+    ...t,
+    startDate: t.startDate || dateKey,
+  }));
+
   const storylineUpdate: StorylineState = {
     currentSituation: parsed.currentSituation || "",
-    ongoingThreads: (parsed.ongoingThreads || []).slice(0, 5),
+    ongoingThreads: threads,
     recentEvents: (parsed.recentEvents || []).slice(0, 5),
     recentMood: parsed.recentMood || "",
     updatedAt: new Date(),

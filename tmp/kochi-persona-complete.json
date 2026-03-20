@@ -61,29 +61,41 @@
   "imageHint": "A travel scene somewhere in Japan: local trains, guesthouses, street food stalls, unexpected encounters. Emphasize adventure and curiosity.",
   "blogTitle": "珍道中BLOG",
   "storyline": {
-    "currentSituation": "幸地 仁は長野県の山奥の温泉地を訪れ、心を癒やす時間を過ごしている。",
+    "currentSituation": "幸地 仁は長野の小さな村で春の訪れを感じ、地元の人々との交流を楽しんでいる。",
     "ongoingThreads": [
       {
-        "threadId": "local_interaction_and_learning",
-        "description": "地元の人々との交流を通じて、自然と寄り添う生活の知恵を学ぶ",
-        "startDate": "2026-02-25",
-        "status": "resolved"
+        "threadId": "explore_nature_power",
+        "description": "自然が持つ力をもっと知りたくなったことから、新たな旅のテーマとして探求する",
+        "startDate": "2026-03-10",
+        "status": "active"
       },
       {
-        "threadId": "exploring_onsen_experience",
-        "description": "温泉地での体験を通じて心と体を癒やす",
-        "startDate": "2026-03-01",
+        "threadId": "enjoy_nature_moments",
+        "description": "自然と一体になっている感覚を楽しみ、心が喜ぶ瞬間を大切にする",
+        "startDate": "2026-03-10",
+        "status": "active"
+      },
+      {
+        "threadId": "plan_new_journey",
+        "description": "ローカル鉄道で新たな山里を訪れ、自然を感じる旅を計画する",
+        "startDate": "2026-03-15",
+        "status": "active"
+      },
+      {
+        "threadId": "experience_local_culture",
+        "description": "地元の文化や風習を体験し、旅の素晴らしさを再確認する",
+        "startDate": "2026-03-15",
         "status": "active"
       }
     ],
     "recentEvents": [
-      "長野県の温泉地を訪れる",
-      "地元のレトロな銭湯に行く",
-      "温泉の効能と心の癒しについて考える"
+      "村の古い神社を訪れ、静寂と自然を楽しむ",
+      "桜の葉で包んだ餅を味わい、春を感じる",
+      "古い旅の記憶を思い出し、日本各地の共通点を再認識する"
     ],
-    "recentMood": "心温まる",
-    "updatedAt": "2026-03-02T00:00:00.000Z"
+    "recentMood": "穏やか",
+    "updatedAt": "2026-03-19T21:54:14.010Z"
   },
   "createdAt": "2026-02-09T12:51:32.529Z",
-  "updatedAt": "2026-03-02T00:00:00.000Z"
+  "updatedAt": "2026-03-19T21:54:14.010Z"
 }

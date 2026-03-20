@@ -322,7 +322,7 @@ ${generatedContent}
 状況: ${currentStoryline.currentSituation}
 最近の気分: ${currentStoryline.recentMood}
 進行中のストーリー:
-${currentStoryline.ongoingThreads.map((t) => `- [${t.status}] ${t.description}`).join("\n")}
+${currentStoryline.ongoingThreads.map((t) => `- [${t.status}] ${t.description}${t.startDate ? ` (開始: ${t.startDate})` : ""}`).join("\n")}
 最近の出来事:
 ${currentStoryline.recentEvents.map((e) => `- ${e}`).join("\n")}
 
@@ -338,6 +338,7 @@ ${currentStoryline.recentEvents.map((e) => `- ${e}`).join("\n")}
     {
       "threadId": "スレッドID（既存のものは維持、新しいものはsnake_caseで生成）",
       "description": "ストーリーの説明",
+      "startDate": "YYYY-MM-DD（既存スレッドは元の日付を維持、新規スレッドは今日の日付: ${dateKey}）",
       "status": "active | resolved | dormant"
     }
   ],

@@ -60,41 +60,41 @@
   "imageHint": "A warm, personal everyday scene: home cooking, a cat napping, a cozy apartment in Shimokitazawa, cafe interior. Emphasize emotional warmth and intimacy.",
   "blogTitle": "愛のひとりごと",
   "storyline": {
-    "currentSituation": "愛は日常の中でデザインのインスピレーションを見つけ、古着屋巡りで新たな発見を楽しんでいる。もちとの時間が愛の創造性を刺激している。",
+    "currentSituation": "愛はもちとの日常を通じて色彩の影響を再認識し、デザインに活かそうと考えている。春の訪れを感じながら、日常の小さな幸せを楽しんでいる。",
     "ongoingThreads": [
       {
-        "threadId": "work_life_balance",
-        "description": "愛が仕事と日常生活のバランスを考える",
-        "startDate": "2026-03-02",
-        "status": "active"
-      },
-      {
-        "threadId": "mochi_brings_joy",
+        "threadId": "mochi_playfulness_bringing_joy",
         "description": "もちの遊び心が愛の日常に小さな喜びをもたらしている",
-        "startDate": "2026-03-02",
+        "startDate": "2026-03-12",
         "status": "active"
       },
       {
-        "threadId": "mochi_inspires_design",
-        "description": "もちの行動が愛のデザインのインスピレーションを刺激している",
-        "startDate": "2026-03-02",
+        "threadId": "color_influence_on_emotions",
+        "description": "色が心に影響を与えることを実感し、デザインに活かす",
+        "startDate": "2026-03-15",
         "status": "active"
       },
       {
-        "threadId": "vintage_shopping_inspiration",
-        "description": "古着屋巡りで愛がデザインのインスピレーションを得る",
-        "startDate": "2026-03-02",
+        "threadId": "enjoying_spring_with_mochi",
+        "description": "もちと共に春の訪れを感じ、日常の小さな幸せを楽しむ",
+        "startDate": "2026-03-15",
+        "status": "active"
+      },
+      {
+        "threadId": "new_perspectives_through_mochis_curiosity",
+        "description": "もちの好奇心を通じて新しい視点を得る",
+        "startDate": "2026-03-18",
         "status": "active"
       }
     ],
     "recentEvents": [
-      "古着屋でヴィンテージスカーフを購入",
-      "レトロなポスターからデザインのヒントを得る",
-      "春巻きを作り、もちとの時間を楽しむ"
+      "もちが窓辺で外を眺める姿を見て小さな好奇心を感じる",
+      "下北沢の街を散歩し、桜の花びらや新緑に心を癒される",
+      "色彩が心に与える影響を改めて感じる"
     ],
-    "recentMood": "穏やか",
-    "updatedAt": "2026-03-02T00:00:00.000Z"
+    "recentMood": "穏やかで温かい",
+    "updatedAt": "2026-03-18T21:54:13.232Z"
   },
   "createdAt": "2026-02-09T12:51:32.529Z",
-  "updatedAt": "2026-03-02T00:00:00.000Z"
+  "updatedAt": "2026-03-18T21:54:13.232Z"
 }

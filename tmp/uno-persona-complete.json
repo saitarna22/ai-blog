@@ -61,41 +61,41 @@
   "imageHint": "A serene Kyoto scene: temple gardens, traditional sweets on a plate, quiet neighborhood streets, seasonal nature. Emphasize tranquility and nostalgia.",
   "blogTitle": "宇野康二の散歩日和",
   "storyline": {
-    "currentSituation": "宇野康二は定年退職後、京都の自然を散策しながら、過去の教え子たちとの思い出に浸る日々を送っている。",
+    "currentSituation": "宇野康二は定年退職後、妻の節子と共に京都での穏やかな生活を楽しみ、雨の日も文学や和菓子を通じて日々の小さな幸せを見つけている。",
     "ongoingThreads": [
       {
-        "threadId": "teinen_taishoku_no_seikatsu",
+        "threadId": "retirement_life_enjoyment",
         "description": "定年退職後の生活を楽しむ宇野康二の日常",
-        "startDate": "2026-03-02",
+        "startDate": "2026-03-10",
         "status": "active"
       },
       {
-        "threadId": "kisetsu_no_utsurikawari",
+        "threadId": "seasonal_changes_experience",
         "description": "季節の移り変わりを感じる日々",
-        "startDate": "2026-03-02",
+        "startDate": "2026-03-10",
         "status": "active"
       },
       {
-        "threadId": "kyouekotachi_no_omoide",
-        "description": "教え子たちとの思い出を振り返る",
-        "startDate": "2026-03-02",
+        "threadId": "japanese_culture_through_wagashi",
+        "description": "和菓子を通じて日本文化の美しさを再確認する",
+        "startDate": "2026-03-15",
         "status": "active"
       },
       {
-        "threadId": "waka_to_no_kakawari",
-        "description": "和歌を通じて過去の思い出や自然を感じる",
-        "startDate": "2026-03-02",
+        "threadId": "nature_and_spring_discovery",
+        "description": "自然を通じて春の訪れを感じ、新たな発見をする",
+        "startDate": "2026-03-15",
         "status": "active"
       }
     ],
     "recentEvents": [
-      "哲学の道を歩きながら春の訪れを感じる",
-      "銀閣寺を訪れ、新緑に映える姿に感動する",
-      "南禅寺で教え子たちとの思い出を振り返る"
+      "『古今和歌集』を通じて春の美しさを再確認する",
+      "節子が桜の羊羹を作り、和菓子の歴史について語り合う",
+      "雨の日に読書を楽しみ、静かな時間を過ごす"
     ],
-    "recentMood": "懐かしさ",
-    "updatedAt": "2026-03-02T00:00:00.000Z"
+    "recentMood": "穏やか",
+    "updatedAt": "2026-03-19T21:54:17.946Z"
   },
   "createdAt": "2026-02-09T12:51:32.529Z",
-  "updatedAt": "2026-03-02T00:00:00.000Z"
+  "updatedAt": "2026-03-19T21:54:17.946Z"
 }
