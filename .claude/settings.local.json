@@ -10,7 +10,10 @@
       "Bash(./node_modules/.bin/tsc:*)",
       "Bash(git -C /Users/saitama/App/ai-blog config user.email)",
       "Bash(node:*)",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "Bash(git -C /Users/saitama/App/ai-blog status)",
+      "Bash(git -C /Users/saitama/App/ai-blog diff vercel.json)",
+      "Bash(git *)"
     ]
   }
 }
